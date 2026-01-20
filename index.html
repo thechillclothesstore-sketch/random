@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OutfitRater</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OutfitRater Public</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="animations.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 </head>
-
 <body>
 
 <header>
@@ -18,156 +20,47 @@
 </header>
 
 <main>
-  
-  <section class="gallery-section">
-  <h2>Public Outfit Gallery</h2>
-  <p class="muted">Rate outfits shared by the community</p>
-
-  <div class="gallery" id="gallery"></div>
-</section>
-
-
+  <!-- Upload Section -->
   <div class="upload-card">
     <h2>Upload Your Outfit</h2>
-    <p>Choose a clear photo of your outfit.</p>
-
+    <p>Choose a clear photo.</p>
     <label class="upload-box">
-      Click to upload image
+      Click to upload
       <input type="file" accept="image/*" id="imageInput">
     </label>
-
     <div class="preview" id="preview">
       <img id="previewImage" />
     </div>
   </div>
 
-<div class="rate-card">
-  <h2>Rate This Outfit</h2>
-  <p class="muted">Click a score. Your vote counts.</p>
-
-  <div class="rate-buttons">
-    <button onclick="rate(1)">1</button>
-    <button onclick="rate(2)">2</button>
-    <button onclick="rate(3)">3</button>
-    <button onclick="rate(4)">4</button>
-    <button onclick="rate(5)">5</button>
+  <!-- Rating Section -->
+  <div class="rate-card">
+    <h2>Rate This Outfit</h2>
+    <p class="muted">Click a score. Your vote counts.</p>
+    <div class="rate-buttons">
+      <button onclick="voteOutfit(1)">1</button>
+      <button onclick="voteOutfit(2)">2</button>
+      <button onclick="voteOutfit(3)">3</button>
+      <button onclick="voteOutfit(4)">4</button>
+      <button onclick="voteOutfit(5)">5</button>
+    </div>
+    <div class="rating-bar"><div class="rating-fill" id="ratingFill"></div></div>
+    <div class="score" id="scoreText"></div>
+    <div class="stats" id="statsText"></div>
   </div>
-
-  <div class="rating-bar">
-    <div class="rating-fill" id="ratingFill"></div>
-  </div>
-
-  <div class="score" id="scoreText"></div>
-  <div class="stats" id="statsText"></div>
-</div>
-
 </main>
+
+<!-- Gallery Section -->
+<section class="gallery-section">
+  <h2>Public Outfit Gallery</h2>
+  <p class="muted">Rate outfits from the community</p>
+  <div class="gallery" id="gallery"></div>
+</section>
 
 <footer>
   © 2026 OutfitRater • Built by <strong>Mouad</strong> & <strong>Iman</strong>
 </footer>
-  
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 
-<script>
-  const input = document.getElementById("imageInput");
-  const preview = document.getElementById("preview");
-  const img = document.getElementById("previewImage");
-  const scoreText = document.getElementById("scoreText");
-  const statsText = document.getElementById("statsText");
-  const ratingFill = document.getElementById("ratingFill");
-  const gallery = document.getElementById("gallery");
-
-  let outfits = JSON.parse(localStorage.getItem("outfits")) || [];
-  let currentOutfitId = null;
-
-  function saveOutfits() {
-    localStorage.setItem("outfits", JSON.stringify(outfits));
-  }
-
-  function renderGallery() {
-    gallery.innerHTML = "";
-
-    outfits.forEach(outfit => {
-      const avg =
-        outfit.ratings.length
-          ? (outfit.ratings.reduce((a, b) => a + b, 0) / outfit.ratings.length).toFixed(1)
-          : "—";
-
-      const card = document.createElement("div");
-      card.className = "gallery-card";
-      card.innerHTML = `
-        <img src="${outfit.image}">
-        <div class="gallery-info">
-          <div><strong>${avg}</strong> / 5</div>
-          <div>${outfit.ratings.length} vote(s)</div>
-        </div>
-      `;
-
-      card.onclick = () => selectOutfit(outfit.id);
-      gallery.appendChild(card);
-    });
-  }
-
-  function selectOutfit(id) {
-    const outfit = outfits.find(o => o.id === id);
-    if (!outfit) return;
-
-    currentOutfitId = id;
-    img.src = outfit.image;
-    preview.style.display = "block";
-
-    const avg =
-      outfit.ratings.length
-        ? (outfit.ratings.reduce((a, b) => a + b, 0) / outfit.ratings.length).toFixed(1)
-        : "—";
-
-    ratingFill.style.width = outfit.ratings.length ? `${(avg / 5) * 100}%` : "0%";
-    scoreText.textContent = `Average Rating: ${avg} / 5`;
-    scoreText.style.display = "block";
-    statsText.textContent = `Based on ${outfit.ratings.length} vote(s)`;
-  }
-
-  input.addEventListener("change", () => {
-    const file = input.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const newOutfit = {
-        id: Date.now(),
-        image: reader.result,
-        ratings: []
-      };
-
-      outfits.unshift(newOutfit);
-      saveOutfits();
-      renderGallery();
-
-      selectOutfit(newOutfit.id);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function rate(value) {
-    if (!currentOutfitId) {
-      alert("Select or upload an outfit first.");
-      return;
-    }
-
-    const outfit = outfits.find(o => o.id === currentOutfitId);
-    outfit.ratings.push(value);
-    saveOutfits();
-    renderGallery();
-    selectOutfit(currentOutfitId);
-  }
-
-  renderGallery();
-</script>
-
-
+<script src="main.js"></script>
 </body>
 </html>
-
