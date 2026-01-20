@@ -64,6 +64,10 @@
   const preview = document.getElementById("preview");
   const img = document.getElementById("previewImage");
   const scoreText = document.getElementById("scoreText");
+  const statsText = document.getElementById("statsText");
+  const ratingFill = document.getElementById("ratingFill");
+
+  let ratings = JSON.parse(localStorage.getItem("ratings")) || [];
 
   input.addEventListener("change", () => {
     const file = input.files[0];
@@ -74,6 +78,8 @@
       img.src = reader.result;
       preview.style.display = "block";
       scoreText.style.display = "none";
+      statsText.textContent = "";
+      ratingFill.style.width = "0%";
     };
     reader.readAsDataURL(file);
   });
@@ -83,8 +89,19 @@
       alert("Upload an outfit first.");
       return;
     }
-    scoreText.textContent = `Final Rating: ${value} / 5`;
+
+    ratings.push(value);
+    localStorage.setItem("ratings", JSON.stringify(ratings));
+
+    const avg =
+      ratings.reduce((a, b) => a + b, 0) / ratings.length;
+
+    ratingFill.style.width = `${(avg / 5) * 100}%`;
+
+    scoreText.textContent = `Average Rating: ${avg.toFixed(1)} / 5`;
     scoreText.style.display = "block";
+
+    statsText.textContent = `Based on ${ratings.length} vote(s)`;
   }
 </script>
 
