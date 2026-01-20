@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="animations.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
@@ -23,9 +24,8 @@
   <!-- Upload Section -->
   <div class="upload-card">
     <h2>Upload Your Outfit</h2>
-    <p>Choose a clear photo.</p>
-    <label class="upload-box">
-      Click to upload
+    <label class="upload-box" for="imageInput">
+      📤 Upload Your Outfit
       <input type="file" accept="image/*" id="imageInput">
     </label>
     <div class="preview" id="preview">
@@ -50,7 +50,6 @@
   </div>
 </main>
 
-<!-- Gallery Section -->
 <section class="gallery-section">
   <h2>Public Outfit Gallery</h2>
   <p class="muted">Rate outfits from the community</p>
