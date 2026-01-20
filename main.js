@@ -1,18 +1,4 @@
-// Firebase Config (replace with yours)
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-};
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-let userId = null;
-
-// Anonymous login
-auth.signInAnonymously().then(cred => { userId = cred.user.uid; });
-
-// DOM Elements
+// DOM elements
 const input = document.getElementById("imageInput");
 const preview = document.getElementById("preview");
 const img = document.getElementById("previewImage");
@@ -20,75 +6,70 @@ const scoreText = document.getElementById("scoreText");
 const statsText = document.getElementById("statsText");
 const ratingFill = document.getElementById("ratingFill");
 const gallery = document.getElementById("gallery");
-let currentOutfitId = null;
 
-// Upload Outfit
+// Fake gallery storage
+let outfits = [];
+let currentOutfit = null;
+
+// Upload outfit
 input.addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = async () => {
+  reader.onload = () => {
     const imageData = reader.result;
-    const docRef = await db.collection("outfits").add({
+    const outfit = {
+      id: outfits.length,
       image: imageData,
-      ratings: {},
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    selectOutfit(docRef.id);
+      rating: fakeRating(),
+      votes: fakeVotes()
+    };
+    outfits.unshift(outfit); // newest first
+    renderGallery();
+    selectOutfit(outfit.id);
   };
   reader.readAsDataURL(file);
 });
 
-// Render Gallery
-db.collection("outfits").orderBy("createdAt","desc").onSnapshot(snapshot => {
+// Select outfit to “rate”
+function selectOutfit(id){
+  currentOutfit = outfits.find(o => o.id === id);
+  if(!currentOutfit) return;
+  img.src = currentOutfit.image;
+  preview.style.display = "block";
+  updateRatingUI(currentOutfit);
+}
+
+// Update rating bar and text
+function updateRatingUI(outfit){
+  ratingFill.style.width = `${(outfit.rating/5)*100}%`;
+  scoreText.textContent = `AI Rating: ${outfit.rating.toFixed(1)} / 5`;
+  scoreText.style.display = "block";
+  statsText.textContent = `Based on ${outfit.votes} AI votes`;
+}
+
+// Fake AI vote generator
+function fakeRating(){
+  return (Math.random() * 2 + 3).toFixed(1); // 3.0 to 5.0
+}
+function fakeVotes(){
+  return Math.floor(Math.random()*200+50); // 50–250 votes
+}
+
+// Render gallery
+function renderGallery(){
   gallery.innerHTML = "";
-  snapshot.forEach(doc => {
-    const data = doc.data();
-    const avg = calculateAverage(data.ratings);
+  outfits.forEach(o => {
     const card = document.createElement("div");
     card.className = "gallery-card";
     card.innerHTML = `
-      <img src="${data.image}">
+      <img src="${o.image}">
       <div class="gallery-info">
-        <strong>${avg}</strong> / 5
-        <div>${Object.keys(data.ratings||{}).length} vote(s)</div>
+        <strong>${o.rating}</strong> / 5
+        <div>${o.votes} votes</div>
       </div>
     `;
-    card.onclick = () => selectOutfit(doc.id);
+    card.onclick = () => selectOutfit(o.id);
     gallery.appendChild(card);
   });
-});
-
-// Select outfit to rate
-async function selectOutfit(id){
-  currentOutfitId = id;
-  const doc = await db.collection("outfits").doc(id).get();
-  const data = doc.data();
-  img.src = data.image;
-  preview.style.display = "block";
-  const avg = calculateAverage(data.ratings);
-  ratingFill.style.width = data.ratings? `${(avg/5)*100}%`:"0%";
-  scoreText.textContent = `Average Rating: ${avg} / 5`;
-  scoreText.style.display = "block";
-  statsText.textContent = `Based on ${Object.keys(data.ratings||{}).length} vote(s)`;
 }
-
-// Vote
-async function voteOutfit(value){
-  if(!currentOutfitId){ alert("Select or upload outfit first"); return; }
-  const docRef = db.collection("outfits").doc(currentOutfitId);
-  const doc = await docRef.get();
-  const ratings = doc.data().ratings || {};
-  ratings[userId] = value;
-  await docRef.set({ratings},{merge:true});
-  selectOutfit(currentOutfitId);
-}
-
-// Calculate average
-function calculateAverage(ratings){
-  const values = Object.values(ratings||{});
-  if(!values.length) return "—";
-  const avg = values.reduce((a,b)=>a+b,0)/values.length;
-  return avg.toFixed(1);
-}
-
