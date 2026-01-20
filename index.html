@@ -3,146 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Outfit Rater</title>
+  <title>OutfitRater</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg: #020617;
-      --card: #0f172a;
-      --border: #1e293b;
-      --text: #e5e7eb;
-      --muted: #94a3b8;
-      --accent: #22d3ee;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Inter, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(180deg, #020617, #020617 60%, #020617);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    header {
-      padding: 24px 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-    }
-
-    header h1 {
-      color: var(--accent);
-      font-size: 1.4rem;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 80px 8%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-    }
-
-    @media (max-width: 900px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .upload-card, .rate-card {
-      background: linear-gradient(180deg, #020617, var(--card));
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px;
-    }
-
-    .upload-card h2,
-    .rate-card h2 {
-      margin-bottom: 12px;
-      font-size: 1.4rem;
-    }
-
-    .upload-card p {
-      color: var(--muted);
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-    }
-
-    .upload-box {
-      border: 2px dashed var(--border);
-      border-radius: 12px;
-      padding: 30px;
-      text-align: center;
-      cursor: pointer;
-      transition: border 0.2s ease;
-    }
-
-    .upload-box:hover {
-      border-color: var(--accent);
-    }
-
-    .upload-box input {
-      display: none;
-    }
-
-    .preview {
-      margin-top: 20px;
-      display: none;
-    }
-
-    .preview img {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .rate-buttons {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .rate-buttons button {
-      padding: 14px;
-      background: #020617;
-      border: 1px solid var(--border);
-      color: var(--text);
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .rate-buttons button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .score {
-      margin-top: 30px;
-      font-size: 1.2rem;
-      color: var(--accent);
-      display: none;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      color: var(--muted);
-      font-size: 0.85rem;
-      border-top: 1px solid var(--border);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -156,7 +20,7 @@
 
   <div class="upload-card">
     <h2>Upload Your Outfit</h2>
-    <p>Choose a photo of your outfit. Clear photos get better feedback.</p>
+    <p>Choose a clear photo of your outfit.</p>
 
     <label class="upload-box">
       Click to upload image
@@ -170,7 +34,7 @@
 
   <div class="rate-card">
     <h2>Rate This Outfit</h2>
-    <p class="muted">1 = painful, 5 = clean fit</p>
+    <p class="muted">1 = disaster, 5 = clean fit</p>
 
     <div class="rate-buttons">
       <button onclick="rate(1)">1</button>
@@ -182,9 +46,9 @@
 
     <div class="score" id="scoreText"></div>
   </div>
-  
+
 </main>
-  
+
 <footer>
   © 2026 OutfitRater • Built by <strong>Mouad</strong> & <strong>Iman</strong>
 </footer>
@@ -220,3 +84,4 @@
 
 </body>
 </html>
+
