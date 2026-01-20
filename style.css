@@ -153,3 +153,44 @@ footer {
   color: var(--muted);
 }
 
+.gallery-section {
+  max-width: 1200px;
+  margin: auto;
+  padding: 40px 8% 80px;
+}
+
+.gallery {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.gallery-card {
+  background: linear-gradient(180deg, #020617, var(--card));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.gallery-card:hover {
+  transform: translateY(-4px);
+}
+
+.gallery-card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.gallery-info {
+  padding: 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.gallery-info strong {
+  color: var(--accent);
+}
+
