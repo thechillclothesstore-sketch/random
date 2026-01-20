@@ -74,8 +74,57 @@
   const scoreText = document.getElementById("scoreText");
   const statsText = document.getElementById("statsText");
   const ratingFill = document.getElementById("ratingFill");
+  const gallery = document.getElementById("gallery");
 
-  let ratings = JSON.parse(localStorage.getItem("ratings")) || [];
+  let outfits = JSON.parse(localStorage.getItem("outfits")) || [];
+  let currentOutfitId = null;
+
+  function saveOutfits() {
+    localStorage.setItem("outfits", JSON.stringify(outfits));
+  }
+
+  function renderGallery() {
+    gallery.innerHTML = "";
+
+    outfits.forEach(outfit => {
+      const avg =
+        outfit.ratings.length
+          ? (outfit.ratings.reduce((a, b) => a + b, 0) / outfit.ratings.length).toFixed(1)
+          : "—";
+
+      const card = document.createElement("div");
+      card.className = "gallery-card";
+      card.innerHTML = `
+        <img src="${outfit.image}">
+        <div class="gallery-info">
+          <div><strong>${avg}</strong> / 5</div>
+          <div>${outfit.ratings.length} vote(s)</div>
+        </div>
+      `;
+
+      card.onclick = () => selectOutfit(outfit.id);
+      gallery.appendChild(card);
+    });
+  }
+
+  function selectOutfit(id) {
+    const outfit = outfits.find(o => o.id === id);
+    if (!outfit) return;
+
+    currentOutfitId = id;
+    img.src = outfit.image;
+    preview.style.display = "block";
+
+    const avg =
+      outfit.ratings.length
+        ? (outfit.ratings.reduce((a, b) => a + b, 0) / outfit.ratings.length).toFixed(1)
+        : "—";
+
+    ratingFill.style.width = outfit.ratings.length ? `${(avg / 5) * 100}%` : "0%";
+    scoreText.textContent = `Average Rating: ${avg} / 5`;
+    scoreText.style.display = "block";
+    statsText.textContent = `Based on ${outfit.ratings.length} vote(s)`;
+  }
 
   input.addEventListener("change", () => {
     const file = input.files[0];
@@ -83,35 +132,37 @@
 
     const reader = new FileReader();
     reader.onload = () => {
-      img.src = reader.result;
-      preview.style.display = "block";
-      scoreText.style.display = "none";
-      statsText.textContent = "";
-      ratingFill.style.width = "0%";
+      const newOutfit = {
+        id: Date.now(),
+        image: reader.result,
+        ratings: []
+      };
+
+      outfits.unshift(newOutfit);
+      saveOutfits();
+      renderGallery();
+
+      selectOutfit(newOutfit.id);
     };
     reader.readAsDataURL(file);
   });
 
   function rate(value) {
-    if (!img.src) {
-      alert("Upload an outfit first.");
+    if (!currentOutfitId) {
+      alert("Select or upload an outfit first.");
       return;
     }
 
-    ratings.push(value);
-    localStorage.setItem("ratings", JSON.stringify(ratings));
-
-    const avg =
-      ratings.reduce((a, b) => a + b, 0) / ratings.length;
-
-    ratingFill.style.width = `${(avg / 5) * 100}%`;
-
-    scoreText.textContent = `Average Rating: ${avg.toFixed(1)} / 5`;
-    scoreText.style.display = "block";
-
-    statsText.textContent = `Based on ${ratings.length} vote(s)`;
+    const outfit = outfits.find(o => o.id === currentOutfitId);
+    outfit.ratings.push(value);
+    saveOutfits();
+    renderGallery();
+    selectOutfit(currentOutfitId);
   }
+
+  renderGallery();
 </script>
+
 
 </body>
 </html>
