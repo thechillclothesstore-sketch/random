@@ -90,23 +90,44 @@ p { color: var(--muted); font-size: 0.95rem; }
 /* Upload Box */
 .upload-box {
   margin-top: 20px;
-  border: 2px dashed var(--border);
-  border-radius: 16px;
-  padding: 28px;
+  border: 3px dashed var(--accent);
+  border-radius: 20px;
+  padding: 40px;
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: rgba(11,12,42,0.3);
+  transition: all 0.4s ease;
+  background: linear-gradient(145deg, rgba(10,10,35,0.2), rgba(18,19,50,0.4));
   position: relative;
   overflow: hidden;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--accent);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+}
+
+.upload-box::before {
+  content: "📤 Upload Your Outfit";
+  display: block;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
 
 .upload-box:hover {
-  border-color: var(--accent);
-  box-shadow: 0 0 20px var(--accent);
+  border-color: var(--highlight);
+  box-shadow: 0 0 24px var(--highlight), 0 0 48px var(--accent);
+  transform: translateY(-4px) scale(1.05);
 }
 
-.upload-box input { display: none; }
+.upload-box:hover::before {
+  transform: scale(1.08);
+  text-shadow: 0 0 12px var(--highlight);
+}
+
+.upload-box input {
+  display: none;
+}
+
 
 /* Image Preview */
 .preview {
