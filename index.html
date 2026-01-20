@@ -33,20 +33,25 @@
     </div>
   </div>
 
-  <div class="rate-card">
-    <h2>Rate This Outfit</h2>
-    <p class="muted">1 = disaster, 5 = clean fit</p>
+<div class="rate-card">
+  <h2>Rate This Outfit</h2>
+  <p class="muted">Click a score. Your vote counts.</p>
 
-    <div class="rate-buttons">
-      <button onclick="rate(1)">1</button>
-      <button onclick="rate(2)">2</button>
-      <button onclick="rate(3)">3</button>
-      <button onclick="rate(4)">4</button>
-      <button onclick="rate(5)">5</button>
-    </div>
-
-    <div class="score" id="scoreText"></div>
+  <div class="rate-buttons">
+    <button onclick="rate(1)">1</button>
+    <button onclick="rate(2)">2</button>
+    <button onclick="rate(3)">3</button>
+    <button onclick="rate(4)">4</button>
+    <button onclick="rate(5)">5</button>
   </div>
+
+  <div class="rating-bar">
+    <div class="rating-fill" id="ratingFill"></div>
+  </div>
+
+  <div class="score" id="scoreText"></div>
+  <div class="stats" id="statsText"></div>
+</div>
 
 </main>
 
